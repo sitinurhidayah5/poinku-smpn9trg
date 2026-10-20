@@ -1,0 +1,55 @@
+@extends('layouts.app')
+@section('title', 'Input Catatan Pelanggaran Siswa')
+
+@section('content')
+<div class="max-w-3xl bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <form action="/violations/store" method="POST" enctype="multipart/form-data" class="space-y-5">
+        @csrf
+
+        <!-- Langkah 1: Pilih Siswa (Multiselect support) -->
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">1. Pilih Siswa (Bisa Pilih >1 Siswa untuk Kejadian Massal)</label>
+            <select name="student_ids[]" multiple class="w-full border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 text-sm h-32" required>
+                @foreach($students as $student)
+                    <option value="{{ $student->id }}">[{{ $student->class->grade }}-{{ $student->class->rombel }}] {{ $student->nis }} - {{ $student->full_name }}</option>
+                @endforeach
+            </select>
+            <p class="text-xs text-slate-400 mt-1">*Tahan tombol CTRL / CMD untuk memilih lebih dari satu siswa sekaligus.</p>
+        </div>
+
+        <!-- Langkah 2: Detail Pelanggaran -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">2. Jenis Pelanggaran</label>
+                <select name="violation_type_id" class="w-full border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500" required>
+                    @foreach($violationTypes as $type)
+                        <option value="{{ $type->id }}">
+                            [{{ $type->category }} - {{ $type->points }} Poin] {{ $type->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal & Waktu</label>
+                <div class="flex gap-2">
+                    <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-1/2 border-slate-300 rounded-lg p-2.5 text-sm" required>
+                    <input type="time" name="time" value="{{ date('H:i') }}" class="w-1/2 border-slate-300 rounded-lg p-2.5 text-sm" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Langkah 3: Bukti & Catatan -->
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">3. KeteranganTambahan & Bukti Foto (Opsional)</label>
+            <textarea name="description" rows="2" placeholder="Tuliskan lokasi/kronologi singkat..." class="w-full border-slate-300 rounded-lg p-2.5 text-sm mb-3"></textarea>
+            <input type="file" name="proof_photo" accept="image/*" class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+        </div>
+
+        <div class="pt-3 flex justify-end">
+            <button type="submit" class="bg-blue-900 text-white font-medium px-6 py-2.5 rounded-lg hover:bg-blue-800 transition text-sm flex items-center gap-2">
+                <i class="fas fa-save"></i> Simpan Record Pelanggaran
+            </button>
+        </div>
+    </form>
+</div>
+@endsection
